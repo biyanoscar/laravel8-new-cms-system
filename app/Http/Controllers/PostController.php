@@ -11,8 +11,13 @@ class PostController extends Controller
     //
     public function index()
     {
-        $posts = Post::all();
+        // $posts = Post::all();
         // $posts = auth()->user()->posts; //ambil data yg post dari user yg login ini saja
+
+        $posts = auth()->user()->posts()->paginate(5);
+
+
+
         return view('admin.posts.index', ['posts' => $posts]);
     }
 
@@ -23,11 +28,13 @@ class PostController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Post::class);
         return view('admin.posts.create');
     }
 
     public function store()
     {
+        $this->authorize('create', Post::class);
         $inputs = request()->validate([
             'title' => 'required|min:8|max:255',
             'post_image' => 'file',
@@ -45,6 +52,9 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
+        $this->authorize('view', $post);
+        // if (auth()->user()->can('view', $post)) {
+        // }
         return view('admin.posts.edit', ['post' => $post]);
     }
 
@@ -66,6 +76,8 @@ class PostController extends Controller
         //disave sesuai user yg login
         // auth()->user()->posts()->save($post);
 
+        $this->authorize('update', $post);
+
         $post->save(); //save biasa
 
         // $post->update($inputs);
@@ -75,6 +87,8 @@ class PostController extends Controller
 
     public function destroy(Post $post, Request $request)
     {
+        $this->authorize('delete', $post);
+
         $post->delete();
         // Session::flash('message', 'Post was deleted');
         $request->session()->flash('message', 'Post was deleted');
