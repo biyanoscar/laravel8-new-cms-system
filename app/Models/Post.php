@@ -15,4 +15,16 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // //mutator
+    // public function setPostImageAttribute($value)
+    // {
+    //     $this->attributes['post_image']=asset($value);
+    // }
+
+    public function getPostImageAttribute($value)
+    {
+        return asset($value);
+        // return asset('storage/' . $value);
+    }
 }
